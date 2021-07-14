@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex} from "typeorm";
 
-export class CreateOrderGames1626271910757 implements MigrationInterface {
+export class CreateOrderGamesUser1626271910757 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'orders_games',
+        name: 'orders_games_users',
         columns: [
           {
             name: 'ordersId',
@@ -15,13 +15,18 @@ export class CreateOrderGames1626271910757 implements MigrationInterface {
             name: 'gamesId',
             type: 'uuid',
             isPrimary: true,
+          },
+          {
+            name: 'usersId',
+            type: 'uuid',
+            isPrimary: true,
           }
         ]
       })
     )
 
     await queryRunner.createIndices(
-      'orders_games',
+      'orders_games_users',
       [
         new TableIndex({
           name: 'IDX_ORDERS_ID',
@@ -31,11 +36,15 @@ export class CreateOrderGames1626271910757 implements MigrationInterface {
           name: 'IDX_GAMES_ID',
           columnNames: ['gamesId']
         }),
+        new TableIndex({
+          name: 'IDX_USERS_ID',
+          columnNames: ['usersId']
+        }),
       ]
     )
 
     await queryRunner.createForeignKeys(
-      'orders_games',
+      'orders_games_users',
       [
         new TableForeignKey({
           columnNames: ['ordersId'],
@@ -49,14 +58,20 @@ export class CreateOrderGames1626271910757 implements MigrationInterface {
           referencedTableName: 'games',
           onDelete: 'CASCADE'
         }),
+        new TableForeignKey({
+          columnNames: ['usersId'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'users',
+          onDelete: 'CASCADE'
+        }),
       ]
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const table = await queryRunner.getTable('orders_games')
+    const table = await queryRunner.getTable('orders_games_users')
     const foreignKeys = table!.foreignKeys
-    await queryRunner.dropForeignKeys('orders_games', foreignKeys)
-    await queryRunner.dropTable('orders_games')
+    await queryRunner.dropForeignKeys('orders_games_users', foreignKeys)
+    await queryRunner.dropTable('orders_games_users')
   }
 }
